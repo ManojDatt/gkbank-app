@@ -71,7 +71,7 @@ class TransactionReport(models.Model):
 		return self.translation.label
 
 
-def reset_balance(sender, instance, *args,**kwargs):
+def reset_balance(sender, instance, created, *args,**kwargs):
 	current_account = instance.customer.account
 	if instance.trans_type == 'Deposit':
 		amount_total = current_account.balance + instance.amount
@@ -85,6 +85,17 @@ def reset_balance(sender, instance, *args,**kwargs):
 		obj.save()
 		current_account.balance = amount_total
 		current_account.save()
-
+	try:
+		from .tasks import send_transaction_mail
+		from datetime import datetime
+		context = {'label': instance.label,
+					'username': instance.customer.username,
+					'amount_total': amount_total,
+					'trans_amount': instance.amount,
+					'trans_type': instance.trans_type,
+					'date': datetime.now()}
+		send_transaction_mail.delay(instance.trans_type, context ,instance.customer.email)
+	except:
+		pass
 
 post_save.connect(reset_balance, sender=Transactions)
