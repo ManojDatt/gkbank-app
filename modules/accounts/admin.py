@@ -37,7 +37,7 @@ class UsersAdmin(SimpleHistoryAdmin, BaseUserAdmin):
         qs = super(UsersAdmin, self).get_queryset(request)
         if request.user.is_customer:
             return qs.filter(id=request.user.id)
-        return qs.filter(is_superuser=True)
+        return qs.filter(is_superuser=False)
 
     def get_form(self, request, obj=None, **kwargs):
         if not obj:

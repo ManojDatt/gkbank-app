@@ -85,17 +85,19 @@ def reset_balance(sender, instance, created, *args,**kwargs):
 		obj.save()
 		current_account.balance = amount_total
 		current_account.save()
-	try:
-		from .tasks import send_transaction_mail
-		from datetime import datetime
-		context = {'label': instance.label,
-					'username': instance.customer.username,
-					'amount_total': amount_total,
-					'trans_amount': instance.amount,
-					'trans_type': instance.trans_type,
-					'date': datetime.now()}
-		send_transaction_mail.delay(instance.trans_type, context ,instance.customer.email)
-	except:
-		pass
+	# try:
+	import pdb
+	pdb.set_trace()
+	from GkBank.celery import send_transaction_mail
+	from datetime import datetime
+	context = {'label': instance.label,
+				'username': instance.customer.username,
+				'amount_total': amount_total,
+				'trans_amount': instance.amount,
+				'trans_type': instance.trans_type,
+				'date': datetime.now()}
+	send_transaction_mail.delay(instance.trans_type, context ,instance.customer.email)
+	# except:
+		# pass
 
 post_save.connect(reset_balance, sender=Transactions)

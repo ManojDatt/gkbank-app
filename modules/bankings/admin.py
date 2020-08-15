@@ -33,8 +33,8 @@ class TransactionsForm(forms.ModelForm):
 			if instance.trans_type == 'Withdraw' and instance.amount > instance.customer.account.balance:
 				raise ValidationError(f"Available amount {instance.customer.account.balance} only.")
 		else:
-			if cleaned_data['amount'] > cleaned_data['customer'].account.balance:
-				raise ValidationError(f"Available amount {instance.customer.account.balance} only.")
+			if instance.trans_type == 'Withdraw' and cleaned_data['amount'] > cleaned_data['customer'].account.balance:
+				raise ValidationError(f"Available amount {cleaned_data['customer'].account.balance} only.")
 
 
 @admin.register(Transactions)
