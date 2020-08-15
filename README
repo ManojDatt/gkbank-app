@@ -38,3 +38,8 @@ In your project's ``settings.py`` add DB settings.
     # Required Db Restore
     ########################
 
+# Testing Creedentials
+Admin: admin@gmail.com / password@12345
+Customer: c1@gmail.com / p12345678
+
+
