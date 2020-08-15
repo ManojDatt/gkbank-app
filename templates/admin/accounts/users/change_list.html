@@ -1,0 +1,53 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    {% if request.user.is_superuser %}
+      <a href="" class="btn btn-info downloads"><i class="nav-icon fas fa-download"></i> Download Statement</a>
+    {% endif %}
+    {{ block.super }}
+
+    <div class="modal fade" id="modalScrollable" tabindex="-1" role="dialog" aria-labelledby="ModalScrollableTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ModalScrollableTitle">Bank Statements</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" id="download_form" action="{% url 'download_statement' %}">
+                {% csrf_token %}
+                <input type="hidden" name="customers" id="customers_list">
+              <div class="form-group">
+                <label for="from_date">From Date</label>
+                <input type="email" class="form-control" id="from_date" placeholder="DD/MM/YYYY">
+                <small class="form-text text-muted">Date from where you are requesting to download bank statements.</small>
+              </div>
+              <div class="form-group">
+                <label for="to_date">To date</label>
+                <input type="text" class="form-control" id="to_date" placeholder="DD/MM/YYYY">
+                <small class="form-text text-muted">Date till that you are requesting to download bank statements.</small>
+              </div>
+            </form>  
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary download_statement">Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block extrahead %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+{% endblock %}
+{% block extrajs %}
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+      
+  </script>
+{% endblock %}

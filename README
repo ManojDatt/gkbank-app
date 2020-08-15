@@ -1,0 +1,40 @@
+Django Admin For Bank App
+==============================
+
+A Django authentication backend for Banking
+
+* Free software: BSD License
+
+Features
+--------
+
+* Admin can manage customers and other staff.
+* Staff user will be allowed to use system based on roles & permissinss.
+* Customer role will add transaction for Deposit & Withdraw.
+
+Installation
+------------
+
+Python package::
+
+    pip install -r requirements.txt
+
+In your project's ``settings.py`` add DB settings.
+
+.. code-block:: python
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'bitbank',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
+
+    ########################
+    # Required Db Restore
+    ########################
+
