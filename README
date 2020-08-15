@@ -42,4 +42,6 @@ In your project's ``settings.py`` add DB settings.
 Admin: admin@gmail.com / password@12345
 Customer: c1@gmail.com / p12345678
 
+# Update email configuration in settings.py & then Run celery Job
+$ celery -A GkBank worker -l info
 
