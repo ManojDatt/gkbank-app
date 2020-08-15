@@ -1,0 +1,175 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin news %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content_title %} {% trans 'Dashboard' %} {% endblock %}
+{% block title %}Dashboard | {{ jazzmin_settings.site_title }} {% endblock %}
+{% block breadcrumbs %}
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}"><i class="fa fa-tachometer-alt"></i> {% trans 'Home' %}</a></li>
+        <li class="breadcrumb-item">{% trans 'Dashboard' %}</li>
+    </ol>
+{% endblock %}
+
+
+{% block content %}
+    {% get_side_menu as dashboard_list %}
+    {% if dashboard_list %}
+        {% widthratio dashboard_list|length 2 1 as middle %}
+    {% endif %}
+
+    <div class="col-lg-9 col-12">
+        <div class="row">
+          {% if request.user.is_customer %}
+            <div class="col-md-6 item">
+                <div class="card small-box item-card cards card-block bg-primary">
+                <div class="inner">
+                  <h3 id="sales_value">{{request.user.account.balance}} <sup style="font-size: 20px">$</sup></h3>
+                  <p>Account Balance</p>
+                </div>
+                <div class="icon">
+                  <i class="fa fa-shopping-cart"></i>
+                </div>
+                  <a href="/bankings/accounts/users/{{request.user.id}}/change/#accounts-tab" class="small-box-footer">
+                    More info <i class="fa fa-arrow-circle-right"></i>
+                  </a>
+              </div>
+            </div>
+
+            <div class="col-md-6 item">
+                <div class="card small-box item-card cards card-block bg-green">
+                <div class="inner">
+                  <h3 id="commission_value">{{request.user.all_trans.count}}</h3>
+                  <p>Transactions</p>
+                </div>
+                <div class="icon">
+                  <i class="fa fa-bars"></i>
+                </div>
+                  <a href="/bankings/bankings/transactions/" class="small-box-footer">
+                    More info <i class="fa fa-arrow-circle-right"></i>
+                  </a>
+              </div>
+            </div>
+          {% else %}
+            <div class="col-md-6 item">
+                <div class="card small-box item-card cards card-block bg-yellow">
+                    <div class="inner">
+                      <h3 id="client_count">{{customers}}</h3>
+                      <p>Clients</p>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-users"></i>
+                    </div>
+                      <a href="/bankings/accounts/users/" class="small-box-footer">
+                        More info <i class="fa fa-arrow-circle-right"></i>
+                      </a>
+                  </div>
+            </div>
+            <div class="col-md-6 item">
+                <div class="card small-box item-card cards card-block bg-yellow">
+                    <div class="inner">
+                      <h3 id="client_count">{{transactions}}</h3>
+                      <p>Transaction</p>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-users"></i>
+                    </div>
+                      <a href="/bankings/bankings/transactions/" class="small-box-footer">
+                        More info <i class="fa fa-arrow-circle-right"></i>
+                      </a>
+                  </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <h3 class="card-title pl-4 pt-2">News & Announcement</h3>
+              <div class="card-body">
+                
+                <div class="list-group">
+                  {% news as news_list %}
+                  {% for nw in news_list %}
+                    <div class="list-group-item list-group-item-action flex-column align-items-start">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ nw.title|safe }}</h5>
+                        <small>{{ nw.updated_at |timesince}}</small>
+                      </div>
+                      <p class="mb-1">{{ nw.details.html|safe}}</p>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-12">
+        <div id="content-related">
+            <div class="module" id="recent-actions-module">
+                <h3>{% trans 'Recent actions' %}</h3>
+                {% load log %}
+                {% get_admin_log 6 as admin_log for_user user %}
+                {% if not admin_log %}
+                    <p>{% trans 'None available' %}</p>
+                {% else %}
+                    <div class="timeline">
+                        {% for entry in admin_log %}
+                            <div>
+                                {% if entry.is_change %}
+                                    <i class="fas fa-edit bg-blue"></i>
+                                {% elif entry.is_deletion %}
+                                    <i class="fas fa-trash bg-danger"></i>
+                                {% elif entry.is_addition %}
+                                    <i class="fas fa-plus-circle bg-success"></i>
+                                {% endif %}
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fas fa-clock"></i>  {{ entry.action_time|timesince }} ago</span>
+                                    <h3 class="timeline-header no-border">
+                                        {% if entry.is_deletion or not entry.get_admin_url %}
+                                            {{ entry.object_repr }}
+                                        {% else %}
+                                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                        {% endif %}
+
+                                        {% if entry.model %}
+                                            <span class="mini quiet">
+                                                {% filter capfirst %}
+                                                    {{ entry.model }}
+                                                {% endfilter %}
+                                            </span>
+                                        {% endif %}
+                                    </h3>
+                                    {% if not entry.is_deletion %}
+                                        <div class="timeline-body">
+                                            {% if entry.is_addition %}
+                                                {{ entry }}
+                                            {% else %}
+                                                <ul style="list-style: none; padding: 0;">
+                                                    {% action_message_to_list entry as action_message_list %}
+                                                    {% for action_message in action_message_list %}
+                                                        <li>{{ action_message|style_bold_first_word }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div>
+                            <i class="fa fa-clock bg-gray"></i>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

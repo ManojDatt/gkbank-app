@@ -48,6 +48,10 @@ class Users(ChangesMixin, AbstractUser):
 		except:
 			return False
 
+	@cached_property
+	def all_trans(self):
+		return self.transactions_set.all()
+
 
 
 class BankAccounts(models.Model):
